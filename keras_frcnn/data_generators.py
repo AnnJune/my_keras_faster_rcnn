@@ -90,14 +90,14 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
     (output_width, output_height) = img_length_calc_function(resized_width, resized_height)
 
     n_anchratios = len(anchor_ratios)
-
+    print(n_anchratios)
     # initialise empty output objectives
     y_rpn_overlap = np.zeros((output_height, output_width, num_anchors))
     y_is_box_valid = np.zeros((output_height, output_width, num_anchors))
     y_rpn_regr = np.zeros((output_height, output_width, num_anchors * 4))
 
     num_bboxes = len(img_data['bboxes'])
-    print(num_bboxes)
+    
     num_anchors_for_bbox = np.zeros(num_bboxes).astype(int)
     best_anchor_for_bbox = -1 * np.ones((num_bboxes, 4)).astype(int)
     best_iou_for_bbox = np.zeros(num_bboxes).astype(np.float32)
