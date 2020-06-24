@@ -186,7 +186,7 @@ if not os.path.isdir(log_path):
 callback = TensorBoard(log_path)
 callback.set_model(model_all)
 
-epoch_length = 8
+epoch_length = 1000
 num_epochs = int(options.num_epochs)
 iter_num = 0
 train_step = 0
@@ -219,9 +219,9 @@ for epoch_num in range(num_epochs):
                 print('RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
 
         # data generator에서 X, Y, image 가져오기
-        print('111-----------------------------------------------------------------')
+        # print('111-----------------------------------------------------------------')
         X, Y, img_data = next(data_gen_train)
-        print(img_data)
+        # print(img_data)
         loss_rpn = model_rpn.train_on_batch(X, Y)
         write_log(callback, ['rpn_cls_loss', 'rpn_reg_loss'], loss_rpn, train_step)
 
