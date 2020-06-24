@@ -14,7 +14,7 @@ def get_data(input_path):
 
     # pascal voc directory + 2012
     # data_paths = [os.path.join(input_path, 'VOC2012')]
-    data_paths = [os.path.join(input_path, 'myVOCCME')]
+    data_paths = [os.path.join(input_path, 'highQualityCME')]
 
     print('Parsing annotation files')
     for data_path in data_paths:
