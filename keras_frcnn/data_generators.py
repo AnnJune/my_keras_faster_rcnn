@@ -280,6 +280,7 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
     sample_selector = SampleSelector(class_count)
 
     while True:
+        print('222------------------------------------------')
         if mode == 'train':
             random.shuffle(all_img_data)
 
