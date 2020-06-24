@@ -38,7 +38,7 @@ parser.add_option("-p", "--path", dest="train_path", help="Path to training data
 parser.add_option("-o", "--parser", dest="parser", help="Parser to use. One of simple or pascal_voc",
                   default="pascal_voc")
 parser.add_option("-n", "--num_rois", dest="num_rois", help="Number of RoIs to process at once.", default=32)
-parser.add_option("--network", dest="network", help="Base network to use. Supports vgg or resnet50.", default='resnet50')
+parser.add_option("--network", dest="network", help="Base network to use. Supports vgg or resnet50.", default='vgg')
 parser.add_option("--hf", dest="horizontal_flips", help="Augment with horizontal flips in training. (Default=false).", action="store_true", default=False)
 parser.add_option("--vf", dest="vertical_flips", help="Augment with vertical flips in training. (Default=false).", action="store_true", default=False)
 parser.add_option("--rot", "--rot_90", dest="rot_90", help="Augment with 90 degree rotations in training. (Default=false).",
@@ -221,7 +221,7 @@ for epoch_num in range(num_epochs):
         # data generator에서 X, Y, image 가져오기
         X, Y, img_data = next(data_gen_train)
         loss_rpn = model_rpn.train_on_batch(X, Y)
-        # write_log(callback, ['rpn_cls_loss', 'rpn_reg_loss'], loss_rpn, train_step)
+        write_log(callback, ['rpn_cls_loss', 'rpn_reg_loss'], loss_rpn, train_step)
 
         P_rpn = model_rpn.predict_on_batch(X)
         # print(P_rpn)
@@ -273,7 +273,7 @@ for epoch_num in range(num_epochs):
                 sel_samples = random.choice(pos_samples)
 
         loss_class = model_classifier.train_on_batch([X, X2[:, sel_samples, :]], [Y1[:, sel_samples, :], Y2[:, sel_samples, :]])
-        # write_log(callback, ['detection_cls_loss', 'detection_reg_loss', 'detection_acc'], loss_class, train_step)
+        write_log(callback, ['detection_cls_loss', 'detection_reg_loss', 'detection_acc'], loss_class, train_step)
         train_step += 1
 
         losses[iter_num, 0] = loss_rpn[1]
@@ -311,12 +311,12 @@ for epoch_num in range(num_epochs):
             iter_num = 0
             start_time = time.time()
 
-            # write_log(callback,
-            #           ['Elapsed_time', 'mean_overlapping_bboxes', 'mean_rpn_cls_loss', 'mean_rpn_reg_loss',
-            #            'mean_detection_cls_loss', 'mean_detection_reg_loss', 'mean_detection_acc', 'total_loss'],
-            #           [time.time() - start_time, mean_overlapping_bboxes, loss_rpn_cls, loss_rpn_regr,
-            #            loss_class_cls, loss_class_regr, class_acc, curr_loss],
-            #           epoch_num)
+            write_log(callback,
+                      ['Elapsed_time', 'mean_overlapping_bboxes', 'mean_rpn_cls_loss', 'mean_rpn_reg_loss',
+                       'mean_detection_cls_loss', 'mean_detection_reg_loss', 'mean_detection_acc', 'total_loss'],
+                      [time.time() - start_time, mean_overlapping_bboxes, loss_rpn_cls, loss_rpn_regr,
+                       loss_class_cls, loss_class_regr, class_acc, curr_loss],
+                      epoch_num)
 
             if curr_loss < best_loss:
                 if C.verbose:
