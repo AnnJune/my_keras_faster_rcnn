@@ -85,7 +85,7 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
     anchor_sizes = C.anchor_box_scales
     anchor_ratios = C.anchor_box_ratios
     num_anchors = len(anchor_sizes) * len(anchor_ratios)
-
+    print(num_anchors)
     # calculate the output map size based on the network architecture
     (output_width, output_height) = img_length_calc_function(resized_width, resized_height)
 
@@ -312,7 +312,8 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
                 try:
                     # rpn ground-truth cls, reg
                     y_rpn_cls, y_rpn_regr = calc_rpn(C, img_data_aug, width, height, resized_width, resized_height, img_length_calc_function)
-                except:
+                except Exception as e:
+                    print(e)
                     continue
 
                 # Zero-center by mean pixel, and preprocess image
