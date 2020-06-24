@@ -220,6 +220,7 @@ for epoch_num in range(num_epochs):
 
         # data generator에서 X, Y, image 가져오기
         X, Y, img_data = next(data_gen_train)
+        print(img_data)
         loss_rpn = model_rpn.train_on_batch(X, Y)
         write_log(callback, ['rpn_cls_loss', 'rpn_reg_loss'], loss_rpn, train_step)
 
