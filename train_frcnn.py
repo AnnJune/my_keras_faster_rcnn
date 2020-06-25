@@ -260,7 +260,7 @@ for epoch_num in range(num_epochs):
             else:
                 selected_pos_samples = np.random.choice(pos_samples, C.num_rois//2, replace=False).tolist()
             if len(list(neg_samples)) == 0:
-				continue
+                continue
             try:
                 selected_neg_samples = np.random.choice(neg_samples, C.num_rois - len(selected_pos_samples), replace=False).tolist()
             except Exception as e:
