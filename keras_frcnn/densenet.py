@@ -65,22 +65,6 @@ def identity_block(input_tensor, kernel_size, filters, stage, block, trainable=T
     x = Activation('relu')(x)
     return x
 
-
-def DenseLayer(x, nb_filter, bn_size=4, alpha=0.0, drop_rate=0.2):
-    # Bottleneck layers
-    x = BatchNormalization(axis=3)(x)
-    x = LeakyReLU(alpha=alpha)(x)
-    x = Conv2D(bn_size*nb_filter, (1, 1), strides=(1,1), padding='same')(x)
-
-    # Composite function
-    x = BatchNormalization(axis=3)(x)
-    x = LeakyReLU(alpha=alpha)(x)
-    x = Conv2D(nb_filter, (3, 3), strides=(1,1), padding='same')(x)
-
-    if drop_rate: x = Dropout(drop_rate)(x)
-
-    return x
-
 def conv_block(x, nb_filter, dropout_rate=None, name=None):
     
     inter_channel = nb_filter*4
