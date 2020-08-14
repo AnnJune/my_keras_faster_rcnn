@@ -81,26 +81,60 @@ def DenseLayer(x, nb_filter, bn_size=4, alpha=0.0, drop_rate=0.2):
 
     return x
 
+def conv_block(x, nb_filter, dropout_rate=None, name=None):
+    
+    inter_channel = nb_filter*4
 
-def DenseBlock(x, nb_layers, growth_rate, drop_rate=0.2):   
-    for ii in range(nb_layers):
-        conv = DenseLayer(x, nb_filter=growth_rate, drop_rate=drop_rate)
-        x = concatenate([x, conv], axis=3)
+    # 1x1 convolution
+    x = BatchNormalization(epsilon=1.1e-5, axis=3, name=name+'_bn1')(x)
+    x = Activation('relu', name=name+'_relu1')(x)
+    x = Conv2D(inter_channel, 1, 1, name=name+'_conv1', use_bias=False)(x)
+
+    if dropout_rate:
+        x = Dropout(dropout_rate)(x)
+
+    # 3x3 convolution
+    x = BatchNormalization(epsilon=1.1e-5, axis=3, name=name+'_bn2')(x)
+    x = Activation('relu', name=name+'_relu2')(x)
+    x = ZeroPadding2D((1, 1), name=name+'_zeropadding2')(x)
+    x = Conv2D(nb_filter, 3, 1, name=name+'_conv2', use_bias=False)(x)
+
+    if dropout_rate:
+        x = Dropout(dropout_rate)(x)
 
     return x
 
 
-def TransitionLayer(x, compression=0.5, alpha=0.0, is_max=0):
+def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
+                grow_nb_filters=True, name =None):
 
-    nb_filter = int(x.shape.as_list()[-1]*compression)
-    x = BatchNormalization(axis=3)(x)
-    x = LeakyReLU(alpha=alpha)(x)
-    x = Conv2D(nb_filter, (1, 1), strides=(1,1), padding='same')(x)
+    concat_feat = x # store the last layer output
 
-    if is_max != 0: x = MaxPooling2D(pool_size=(2, 2), strides=2)(x)
-    else: x = AveragePooling2D(pool_size=(2, 2), strides=2)(x)
+    for i in range(nb_layers):
+        
+        branch = i+1
+        x =conv_block(concat_feat, growth_rate, dropout_rate, name=name+str(stage)+'_block'+str(branch)) # 在参考的基础，修改的地方这里应该是相同的growth_rate=32
+        concat_feat = Concatenate(axis=3, name=name+str(stage)+'_block'+str(branch))([concat_feat, x])
+
+        if grow_nb_filters:
+            nb_filter += growth_rate
+
+    return concat_feat, nb_filter
+
+def transition_block (x,stage, nb_filter, compression=1.0, dropout_rate=None, name=None):
+
+    x = BatchNormalization(epsilon=1.1e-5, axis=3, name=name+str(stage)+'_bn')(x)
+    x = Activation('relu', name=name+str(stage)+'_relu')(x)
+    
+    x = Conv2D(int(nb_filter*compression), 1, 1, name=name+str(stage)+'_conv', use_bias=False)(x)
+
+    if dropout_rate:
+        x = Dropout(dropout_rate)(x)
+    
+    x = AveragePooling2D((2,2), strides=(2,2), name=name+str(stage)+'_pooling2d')(x)
 
     return x
+
 
 # def nn_base(input_tensor=None, trainable=False):
     if K.image_data_format()=='channels_first':
@@ -137,7 +171,7 @@ def TransitionLayer(x, compression=0.5, alpha=0.0, is_max=0):
     x = GlobalAveragePooling2D()(x)
     x = Dense(10, activation='softmax')(x)
 
-return x
+    return x
 
 def nn_base(input_tensor=None, trainable=False, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, dropout_rate=0.0, weight_decay=1e-4,
              classes=1000, weights_path=None):

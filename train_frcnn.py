@@ -38,7 +38,7 @@ parser.add_option("-p", "--path", dest="train_path", help="Path to training data
 parser.add_option("-o", "--parser", dest="parser", help="Parser to use. One of simple or pascal_voc",
                   default="pascal_voc")
 parser.add_option("-n", "--num_rois", dest="num_rois", help="Number of RoIs to process at once.", default=32)
-parser.add_option("--network", dest="network", help="Base network to use. Supports vgg or resnet50.", default='vgg')
+parser.add_option("--network", dest="network", help="Base network to use. Supports vgg or resnet50.", default='densenet')
 parser.add_option("--hf", dest="horizontal_flips", help="Augment with horizontal flips in training. (Default=false).", action="store_true", default=False)
 parser.add_option("--vf", dest="vertical_flips", help="Augment with vertical flips in training. (Default=false).", action="store_true", default=False)
 parser.add_option("--rot", "--rot_90", dest="rot_90", help="Augment with 90 degree rotations in training. (Default=false).",
@@ -84,6 +84,9 @@ elif options.network == 'xception':
 elif options.network == 'inception_resnet_v2':
     from keras_frcnn import inception_resnet_v2 as nn
     C.network = 'inception_resnet_v2'
+elif options.network == 'densenet':
+    from keras_frcnn import densenet as nn
+    C.network = 'densenet'
 else:
     print('Not a valid model')
     raise ValueError
