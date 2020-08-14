@@ -19,6 +19,14 @@ from keras.models import Model, save_model, load_model
 from keras.layers import Input, Dense, Dropout, BatchNormalization, LeakyReLU, concatenate
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
 
+import  tensorflow as tf
+from    tensorflow import keras
+from    tensorflow.keras import layers, models, Sequential, backend
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization, Activation, GlobalAveragePooling2D
+from tensorflow.keras.layers import Concatenate, Lambda, Input, ZeroPadding2D, AveragePooling2D
+
+
+
 def get_weight_path():
     if K.image_data_format() == 'channels_first':
         return 'densenet_weights_th_dim_ordering_th_kernels_notop.h5'
